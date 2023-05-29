@@ -127,7 +127,7 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
             return True
 
     prompt = gen_prompt(subject, kshot, devset=devset)
-    input_end = format_example(example)
+    input_end = format_example(example, include_answer=False)
     train_example = prompt + input_end
     while not check_valid_length(train_example, tokenizer, max_seq_length) and kshot > 0:
         kshot -= 1
