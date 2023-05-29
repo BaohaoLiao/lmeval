@@ -95,13 +95,13 @@ def format_subject(subject):
     return s
 
 
-def format_example(dataset, idx, include_answer=True):
-    prompt = dataset[idx]["question"]
-    for i, v in enumerate(dataset[idx]["choices"]):
+def format_example(example, include_answer=True):
+    prompt = example["question"]
+    for i, v in enumerate(example["choices"]):
         prompt += "\n{}. {}".format(CHOICES[i], v)
     prompt += "\nAnswer:"
     if include_answer:
-        prompt += " {}\n\n".format(CHOICES[dataset[idx]["answer"]])
+        prompt += " {}\n\n".format(CHOICES[example["answer"]])
     return prompt
 
 
