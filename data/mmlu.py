@@ -146,6 +146,8 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             f"You can only choose a category from {CATEGORIES.names()}"
 
     #TODO: evaluate only one category rather than all
+    import time
+    start = time.time()
     for i, (k, v) in enumerate(SUBCATEGORIES.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
@@ -168,7 +170,9 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             raw_dataset = subcateg_dataset
         else:
             raw_dataset = concatenate_datasets([raw_dataset, subcateg_dataset])
-    print(raw_dataset)
+    end = time.time()
+    print("time: ", end - start)
+    print(raw_dataset[:20])
     return raw_dataset
 
 
