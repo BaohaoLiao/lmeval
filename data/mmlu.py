@@ -211,6 +211,8 @@ if __name__ == "__main__":
     import fire
     fire.Fire(main)
 
+# python mmlu.py facebook/opt-1.3b
+
 
 
 
