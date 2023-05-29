@@ -162,6 +162,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             )
         )
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices"])
+        print(subcateg_dataset[0])
         if i == 0:
             raw_dataset = subcateg_dataset
         else:
