@@ -134,7 +134,9 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
         short_prompt = gen_prompt(subject, kshot, devset=devset)
         train_example = short_prompt + input_end
     example["input"] = train_example
+    print("0", example["answer"])
     example["answer"] = CHOICES[example["answer"]]
+    print("1", example["answer"])
     return example
 
 
@@ -171,8 +173,8 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
         else:
             raw_dataset = concatenate_datasets([raw_dataset, subcateg_dataset])
     end = time.time()
-    print("time: ", end - start)
-    print(raw_dataset[:20])
+    print("time: ", end - start) # 121.26270389556885
+    print(raw_dataset[:10])
     return raw_dataset
 
 
