@@ -134,6 +134,7 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
         short_prompt = gen_prompt(subject, kshot, devset=devset)
         train_example = short_prompt + input_end
     example["input"] = train_example
+    example["answer"] = CHOICES[example["answer"]]
     return example
 
 
@@ -144,7 +145,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
         assert category in CATEGORIES.names(), \
             f"You can only choose a category from {CATEGORIES.names()}"
 
-    # if category == "all": #TODO
+    #TODO: evaluate only one category rather than all
     for i, (k, v) in enumerate(SUBCATEGORIES.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
