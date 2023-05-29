@@ -119,24 +119,22 @@ def gen_prompt(subject, kshot, devset=None):
     return prompt
 
 
-def construct_evaluation_samples(examples, tokenizer, max_seq_length, kshot, subject, devset):
+def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subject, devset):
     def check_valid_length(example, tokenizer, max_seq_length):
         if len(tokenizer(example)['input_ids']) > max_seq_length:
             return False
         else:
             return True
 
-    inputs = []
     prompt = gen_prompt(subject, kshot, devset=devset)
-    for i in range(len(examples)):
-        example_end = format_example(examples[i])
-        example = prompt + example_end
-        while not check_valid_length(example, tokenizer, max_seq_length) and kshot > 0:
-            kshot -= 1
-            short_prompt = gen_prompt(subject, kshot, devset=devset)
-            example = short_prompt + example_end
-        inputs.append(example)
-    return {"input": inputs}
+    input_end = format_example(example)
+    train_example = prompt + input_end
+    while not check_valid_length(train_example, tokenizer, max_seq_length) and kshot > 0:
+        kshot -= 1
+        short_prompt = gen_prompt(subject, kshot, devset=devset)
+        train_example = short_prompt + input_end
+    example["input"] = train_example
+    return example
 
 
 def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", kshot=5):
@@ -159,11 +157,9 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             subcateg_dataset_dev = load_dataset(DATASET_NAME, k, split="dev")
 
         subcateg_dataset = subcateg_dataset.map(
-            lambda examples: construct_evaluation_samples(
-                examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
-            ),
-            batched = True,
-            batch_size = 5
+            lambda example: construct_evaluation_samples(
+                example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
+            )
         )
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices"])
         if i == 0:
