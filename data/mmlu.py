@@ -168,6 +168,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             raw_dataset = subcateg_dataset
         else:
             raw_dataset = concatenate_datasets([raw_dataset, subcateg_dataset])
+    print(raw_dataset)
     return raw_dataset
 
 
