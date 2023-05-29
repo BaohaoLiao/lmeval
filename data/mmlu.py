@@ -115,7 +115,7 @@ def gen_prompt(subject, kshot, devset=None):
         return prompt
     assert kshot <= devset.shape[0], f"There are not enough samples for generating the {kshot} prompt."
     for i in range(kshot):
-        prompt += format_example(devset, i)
+        prompt += format_example(devset[i])
     return prompt
 
 
