@@ -151,8 +151,8 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
         categ_column = [v[0]] * len(subcateg_dataset)
-        subcateg_dataset.add_column("subcategory", subcateg_column)
-        subcateg_dataset.add_column("category", categ_column)
+        subcateg_dataset = subcateg_dataset.add_column("subcategory", subcateg_column)
+        subcateg_dataset = subcateg_dataset.add_column("category", categ_column)
 
         subcateg_dataset_dev = None
         if kshot > 0:
