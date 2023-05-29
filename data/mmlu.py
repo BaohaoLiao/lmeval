@@ -137,6 +137,7 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
     print("0", example["answer"])
     example["answer"] = CHOICES[example["answer"]]
     print("1", example["answer"])
+    print(example)
     return example
 
 
