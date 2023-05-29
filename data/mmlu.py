@@ -143,8 +143,16 @@ def make_mmlu_dataset(
         assert category in CATEGORIES.names(), \
             f"You can only choose a category from {CATEGORIES.names()}"
 
-    #TODO: evaluate only one category rather than all
-    for i, (k, v) in enumerate(SUBCATEGORIES.items()):
+    if category == "all":
+        subjects = SUBCATEGORIES
+    else:
+        subjects = {}
+        for c in CATEGORIES[category]:
+            for k, v in SUBCATEGORIES.items():
+                if v[0] == c:
+                    subjects[k] = v
+
+    for i, (k, v) in enumerate(subjects.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
         categ_column = [v[0]] * len(subcateg_dataset)
@@ -180,7 +188,7 @@ def main(model_name_or_path: str, cache_dir: str):
         padding_side="right",
         use_fast=True,
     )
-    category = "all"
+    category = "STEM"
     raw_dataset = make_mmlu_dataset(
         category,
         tokenizer,
