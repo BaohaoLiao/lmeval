@@ -99,9 +99,9 @@ def format_example(example, include_answer=True):
     prompt = example["question"]
     for i, v in enumerate(example["choices"]):
         prompt += "\n{}. {}".format(CHOICES[i], v)
-    prompt += "\nAnswer:"
+    prompt += "\nAnswer: "
     if include_answer:
-        prompt += " {}\n\n".format(CHOICES[example["answer"]])
+        prompt += "{}\n\n".format(CHOICES[example["answer"]])
     return prompt
 
 
