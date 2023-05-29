@@ -161,9 +161,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
         subcateg_dataset = subcateg_dataset.map(
             lambda examples: construct_evaluation_samples(
                 examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
-            ),
-            batched = True,
-            batch_size = 5
+            )
         )
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices"])
         if i == 0:
