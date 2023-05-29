@@ -138,10 +138,10 @@ def make_mmlu_dataset(
     category, tokenizer, max_seq_length, split="validation", kshot=5, num_proc=1
 ):
     assert category is not None, \
-            f"You need to specify the category in {CATEGORIES.names()} or all"
+            f"You need to specify the category in {CATEGORIES.keys()} or all"
     if category != "all":
-        assert category in CATEGORIES.names(), \
-            f"You can only choose a category from {CATEGORIES.names()}"
+        assert category in CATEGORIES.keys(), \
+            f"You can only choose a category from {CATEGORIES.keys()}"
 
     if category == "all":
         subjects = SUBCATEGORIES
