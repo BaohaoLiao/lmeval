@@ -22,7 +22,7 @@ CATEGORIES = {
         "geography",
         "psychology",
     ],
-    "other (business, health, misc.)": ["other", "business", "health"],
+    "other": ["other", "business", "health"],
 }
 SUBCATEGORIES = {
     "abstract_algebra": ["math"],
@@ -134,9 +134,17 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
     example["output"] = CHOICES[example["answer"]]
     return example
 
+
 def make_mmlu_dataset(
     category, tokenizer, max_seq_length, split="validation", kshot=5, num_proc=1
 ):
+    """
+    :param category: the category name in ["all", "STEM", "humanities", "social sciences", "other"]
+    :param split: in ["train", "validation", "test"]
+    :param kshot: 5 by default
+    :return:
+        raw_dataset: {"input": ..., "output":..., "category": ..., "subcategory": ...}
+    """
     assert category is not None, \
             f"You need to specify the category in {CATEGORIES.keys()} or all"
     if category != "all":
@@ -175,16 +183,15 @@ def make_mmlu_dataset(
             raw_dataset = subcateg_dataset
         else:
             raw_dataset = concatenate_datasets([raw_dataset, subcateg_dataset])
-    print(raw_dataset[11:20])
     return raw_dataset
 
 
-# for debugging
-def main(model_name_or_path: str, cache_dir: str):
+# Test
+def main(model_name_or_path: str):
     from transformers import AutoTokenizer
+
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path,
-        cache_dir=cache_dir,
         padding_side="right",
         use_fast=True,
     )
@@ -196,8 +203,9 @@ def main(model_name_or_path: str, cache_dir: str):
         split="validation",
         kshot=5
     )
+    print(raw_dataset.features)
+    print(raw_dataset[:5])
     return
-
 
 if __name__ == "__main__":
     import fire
