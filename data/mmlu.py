@@ -103,17 +103,6 @@ def format_example(example, include_answer=True):
         prompt += "{}\n\n".format(CHOICES[example["answer"]])
     return prompt
 
-"""
-def format_example(examples, idx, include_answer=False):
-    prompt = examples["question"][idx]
-    for i, v in enumerate(examples["choices"][idx]):
-        prompt += "\n{}. {}".format(CHOICES[i], v)
-    prompt += "\nAnswer: "
-    if include_answer:
-        prompt += "{}\n\n".format(CHOICES[examples["answer"][idx]])
-    return prompt
-"""
-
 def gen_prompt(subject, kshot, devset=None):
     if devset is None:
         assert kshot == 0, "If kshot != 0, you need to specify the prompt dataset."
@@ -126,7 +115,6 @@ def gen_prompt(subject, kshot, devset=None):
     for i in range(kshot):
         prompt += format_example(devset[i])
     return prompt
-
 
 def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subject, devset):
     def check_valid_length(example, tokenizer, max_seq_length):
@@ -145,30 +133,9 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
     example["input"] = train_example
     example["output"] = CHOICES[example["answer"]]
     return example
-"""
-def construct_evaluation_samples(examples, tokenizer, max_seq_length, kshot, subject, devset):
-    def check_valid_length(example, tokenizer, max_seq_length):
-        if len(tokenizer(example)['input_ids']) > max_seq_length:
-            return False
-        else:
-            return True
 
-    inputs = []
-    outputs = []
-    prompt = gen_prompt(subject, kshot, devset=devset)
-    for i in range(len(examples["question"])):
-        input_end = format_example(examples, i, include_answer=False)
-        train_example = prompt + input_end
-        while not check_valid_length(train_example, tokenizer, max_seq_length) and kshot > 0:
-            kshot -= 1
-            short_prompt = gen_prompt(subject, kshot, devset=devset)
-            train_example = short_prompt + input_end
-        inputs.append(train_example)
-        outputs.append(CHOICES[examples["answer"][i]])
-    return {"input": inputs, "output": outputs}
-"""
 def make_mmlu_dataset(
-    category, tokenizer, max_seq_length, split="validation", kshot=5, num_proc=3
+    category, tokenizer, max_seq_length, split="validation", kshot=5, num_proc=1
 ):
     assert category is not None, \
             f"You need to specify the category in {CATEGORIES.names()} or all"
@@ -177,8 +144,6 @@ def make_mmlu_dataset(
             f"You can only choose a category from {CATEGORIES.names()}"
 
     #TODO: evaluate only one category rather than all
-    import time
-    start = time.time()
     for i, (k, v) in enumerate(SUBCATEGORIES.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
@@ -189,17 +154,7 @@ def make_mmlu_dataset(
         subcateg_dataset_dev = None
         if kshot > 0:
             subcateg_dataset_dev = load_dataset(DATASET_NAME, k, split="dev")
-        """
-        subcateg_dataset = subcateg_dataset.map(
-            lambda examples: construct_evaluation_samples(
-                examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
-            ),
-            batched = True,
-            batch_size = 5,
-            remove_columns = ["question", "choices", "answer"],
-            num_proc = 5
-        )
-        """
+
         subcateg_dataset = subcateg_dataset.map(
             lambda example: construct_evaluation_samples(
                 example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
@@ -208,15 +163,11 @@ def make_mmlu_dataset(
             num_proc=num_proc,
         )
 
-        #subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices", "answer"])
-
         if i == 0:
             raw_dataset = subcateg_dataset
         else:
             raw_dataset = concatenate_datasets([raw_dataset, subcateg_dataset])
-    end = time.time()
-    print("time: ", end - start) # 121.26270389556885
-    print(raw_dataset[:10])
+    print(raw_dataset[11:20])
     return raw_dataset
 
 
