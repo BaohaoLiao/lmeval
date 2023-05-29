@@ -94,7 +94,7 @@ def format_subject(subject):
         s += " " + entry
     return s
 
-def format_dev_example(example, include_answer=True):
+def format_example(example, include_answer=True):
     prompt = example["question"]
     for i, v in enumerate(example["choices"]):
         prompt += "\n{}. {}".format(CHOICES[i], v)
@@ -103,6 +103,7 @@ def format_dev_example(example, include_answer=True):
         prompt += "{}\n\n".format(CHOICES[example["answer"]])
     return prompt
 
+"""
 def format_example(examples, idx, include_answer=False):
     prompt = examples["question"][idx]
     for i, v in enumerate(examples["choices"][idx]):
@@ -111,6 +112,7 @@ def format_example(examples, idx, include_answer=False):
     if include_answer:
         prompt += "{}\n\n".format(CHOICES[examples["answer"][idx]])
     return prompt
+"""
 
 def gen_prompt(subject, kshot, devset=None):
     if devset is None:
@@ -122,10 +124,10 @@ def gen_prompt(subject, kshot, devset=None):
         return prompt
     assert kshot <= devset.shape[0], f"There are not enough samples for generating the {kshot} prompt."
     for i in range(kshot):
-        prompt += format_dev_example(devset[i])
+        prompt += format_example(devset[i])
     return prompt
 
-"""
+
 def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subject, devset):
     def check_valid_length(example, tokenizer, max_seq_length):
         if len(tokenizer(example)['input_ids']) > max_seq_length:
@@ -164,8 +166,10 @@ def construct_evaluation_samples(examples, tokenizer, max_seq_length, kshot, sub
         inputs.append(train_example)
         outputs.append(CHOICES[examples["answer"][i]])
     return {"input": inputs, "output": outputs}
-
-def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", kshot=5):
+"""
+def make_mmlu_dataset(
+    category, tokenizer, max_seq_length, split="validation", kshot=5, num_proc=3
+):
     assert category is not None, \
             f"You need to specify the category in {CATEGORIES.names()} or all"
     if category != "all":
@@ -185,7 +189,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
         subcateg_dataset_dev = None
         if kshot > 0:
             subcateg_dataset_dev = load_dataset(DATASET_NAME, k, split="dev")
-
+        """
         subcateg_dataset = subcateg_dataset.map(
             lambda examples: construct_evaluation_samples(
                 examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
@@ -200,8 +204,10 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             lambda example: construct_evaluation_samples(
                 example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
             ),
+            remove_columns=["question", "choices", "answer"],
+            num_proc=num_proc,
         )
-        """
+
         #subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices", "answer"])
 
         if i == 0:
