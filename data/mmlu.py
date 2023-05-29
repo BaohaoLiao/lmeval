@@ -164,7 +164,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
                 example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
             )
         )
-        print(subcateg_dataset)
+        print(subcateg_dataset[0])
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices"])
 
         if i == 0:
