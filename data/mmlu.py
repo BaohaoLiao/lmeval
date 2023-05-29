@@ -191,7 +191,9 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
                 examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
             ),
             batched = True,
-            batch_size = 10,
+            batch_size = 5,
+            remove_columns = ["question", "choices", "answer"],
+            num_proc = 1
         )
         """
         subcateg_dataset = subcateg_dataset.map(
@@ -200,7 +202,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             ),
         )
         """
-        subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices", "answer"])
+        #subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices", "answer"])
 
         if i == 0:
             raw_dataset = subcateg_dataset
