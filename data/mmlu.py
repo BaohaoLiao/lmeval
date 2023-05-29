@@ -134,10 +134,7 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
         short_prompt = gen_prompt(subject, kshot, devset=devset)
         train_example = short_prompt + input_end
     example["input"] = train_example
-    print("0", example["answer"])
     example["answer"] = CHOICES[example["answer"]]
-    print("1", example["answer"])
-    print(example)
     return example
 
 
@@ -167,6 +164,7 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
                 example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
             )
         )
+        print(subcateg_dataset)
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices"])
 
         if i == 0:
