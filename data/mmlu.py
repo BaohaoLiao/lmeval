@@ -94,8 +94,7 @@ def format_subject(subject):
         s += " " + entry
     return s
 
-
-def format_example(example, include_answer=True):
+def format_dev_example(example, include_answer=True):
     prompt = example["question"]
     for i, v in enumerate(example["choices"]):
         prompt += "\n{}. {}".format(CHOICES[i], v)
@@ -104,6 +103,14 @@ def format_example(example, include_answer=True):
         prompt += "{}\n\n".format(CHOICES[example["answer"]])
     return prompt
 
+def format_example(examples, idx, include_answer=False):
+    prompt = examples["question"][idx]
+    for i, v in enumerate(examples["choices"][idx]):
+        prompt += "\n{}. {}".format(CHOICES[i], v)
+    prompt += "\nAnswer: "
+    if include_answer:
+        prompt += "{}\n\n".format(CHOICES[examples["answer"][idx]])
+    return prompt
 
 def gen_prompt(subject, kshot, devset=None):
     if devset is None:
@@ -115,10 +122,10 @@ def gen_prompt(subject, kshot, devset=None):
         return prompt
     assert kshot <= devset.shape[0], f"There are not enough samples for generating the {kshot} prompt."
     for i in range(kshot):
-        prompt += format_example(devset[i])
+        prompt += format_dev_example(devset[i])
     return prompt
 
-
+"""
 def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subject, devset):
     def check_valid_length(example, tokenizer, max_seq_length):
         if len(tokenizer(example)['input_ids']) > max_seq_length:
@@ -136,7 +143,27 @@ def construct_evaluation_samples(example, tokenizer, max_seq_length, kshot, subj
     example["input"] = train_example
     example["output"] = CHOICES[example["answer"]]
     return example
+"""
+def construct_evaluation_samples(examples, tokenizer, max_seq_length, kshot, subject, devset):
+    def check_valid_length(example, tokenizer, max_seq_length):
+        if len(tokenizer(example)['input_ids']) > max_seq_length:
+            return False
+        else:
+            return True
 
+    inputs = []
+    outputs = []
+    prompt = gen_prompt(subject, kshot, devset=devset)
+    for i in range(len(examples["question"])):
+        input_end = format_example(examples, i, include_answer=False)
+        train_example = prompt + input_end
+        while not check_valid_length(train_example, tokenizer, max_seq_length) and kshot > 0:
+            kshot -= 1
+            short_prompt = gen_prompt(subject, kshot, devset=devset)
+            train_example = short_prompt + input_end
+        inputs.append(train_example)
+        outputs.append(CHOICES[examples["answer"][i]])
+    return {"input": inputs, "output": outputs}
 
 def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", kshot=5):
     assert category is not None, \
@@ -160,11 +187,19 @@ def make_mmlu_dataset(category, tokenizer, max_seq_length, split="validation", k
             subcateg_dataset_dev = load_dataset(DATASET_NAME, k, split="dev")
 
         subcateg_dataset = subcateg_dataset.map(
+            lambda examples: construct_evaluation_samples(
+                examples, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
+            ),
+            batched = True,
+            batch_size = 10,
+        )
+        """
+        subcateg_dataset = subcateg_dataset.map(
             lambda example: construct_evaluation_samples(
                 example, tokenizer, max_seq_length, kshot, k, subcateg_dataset_dev
-            )
+            ),
         )
-        print(subcateg_dataset[0])
+        """
         subcateg_dataset = subcateg_dataset.remove_columns(["question", "choices", "answer"])
 
 
