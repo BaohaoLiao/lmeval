@@ -244,7 +244,6 @@ def train():
                     "eos_token": tokenizer.convert_ids_to_tokens(model.config.eos_token_id),
                     "bos_token": tokenizer.convert_ids_to_tokens(model.config.bos_token_id),
                     "unk_token": tokenizer.convert_ids_to_tokens(model.config.pad_token_id),
-                    "pad_token": tokenizer.convert_ids_to_tokens(model.config.pad_token_id),
                 }
             )
 
