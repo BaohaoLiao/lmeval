@@ -54,6 +54,7 @@ class DataCollatorForCausalLM(object):
                 else:
                     labels.append(torch.tensor(copy.deepcopy(tokenized_source + tokenized_target)))
             else:
+                print("?????")
                 input_ids.append(torch.tensor(tokenized_source))
                 labels.append(torch.tensor(tokenized_target))
                 # Apply padding
