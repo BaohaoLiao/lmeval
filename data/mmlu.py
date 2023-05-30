@@ -216,11 +216,9 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         preds, refs = [], []
         loss_mmlu = 0
 
-        print(self.dataset[0])
         for batch in tqdm(data_loader, total=len(data_loader)):
             print(batch)
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
-            print(logits.size())
             # There are two tokens, the output, and eos token.
             for i, logit in enumerate(logits):
                 label_non_zero_id = (batch['labels'][i] != -100).nonzero()[0][0]
@@ -230,7 +228,6 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             refs += [self.abcd_idx.index(label) for label in labels.tolist()]
             loss_mmlu += loss.item()
 
-        print(preds, refs)
         # Extract results by subject.
         results = {'mmlu_loss': loss_mmlu / len(data_loader)}
         subject = self.dataset['category']
@@ -247,6 +244,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             results[f'mmlu_accuracy_{subject}'] = subject_score
             subject_scores.append(subject_score)
         results[f'mmlu_accuracy'] = np.mean(subject_scores)
+        print(results)
         self.trainer.log(results)
         self.trainer.data_collator.source_max_len = source_max_len
 
