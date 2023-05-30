@@ -182,10 +182,11 @@ def train():
     args = argparse.Namespace(
         **vars(model_args), **vars(data_args), **vars(training_args)
     )
+    args.args_for_additional_eval = eval(args.args_for_additional_eval)
 
     print("loading model ...")
     model = get_accelerate_model(args)
-    print('loaded model')
+    print('finished model loading')
     set_seed(args.seed)
 
     tokenizer = AutoTokenizer.from_pretrained(
