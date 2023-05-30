@@ -25,6 +25,7 @@ class DataCollatorForCausalLM(object):
         # Extract elements
         sources = [example['input'] for example in instances]
         targets = [f"{example['output']}{self.tokenizer.eos_token}" for example in instances]
+        print(targets)
         # Tokenize
         tokenized_sources_with_prompt = self.tokenizer(
             sources,
@@ -57,7 +58,6 @@ class DataCollatorForCausalLM(object):
             else:
                 input_ids.append(torch.tensor(tokenized_source))
                 labels.append(torch.tensor(tokenized_target))
-                print("###", labels)
         # Apply padding
         input_ids = pad_sequence(input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id)
         labels = pad_sequence(
