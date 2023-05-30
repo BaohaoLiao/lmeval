@@ -223,7 +223,7 @@ def train():
         model=model,
         tokenizer=tokenizer,
         args=training_args,
-        **{k: v for k, v in data_module.items() if k != 'predict_dataset'},
+        #**{k: v for k, v in data_module.items() if k != 'predict_dataset'},
     )
 
     if args.do_additional_eval:
