@@ -226,7 +226,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             loss_mmlu += loss.item()
         # Extract results by subject.
         results = {'mmlu_loss': loss_mmlu / len(data_loader)}
-        subject = self.dataset['subject']
+        subject = self.dataset['category']
         subjects = {s: {'refs': [], 'preds': []} for s in set(subject)}
         for s, p, r in zip(subject, preds, refs):
             subjects[s]['preds'].append(p)
