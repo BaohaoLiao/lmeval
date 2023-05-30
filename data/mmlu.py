@@ -195,7 +195,7 @@ def make_mmlu_dataset(
 
 
 class MMLUEvalCallback(transformers.TrainerCallback):
-    def __init__(self, trainer, dataset, tokenizer):
+    def __init__(self, trainer, dataset, tokenizer, args):
         self.trainer = trainer
         self.dataset = dataset
         self.abcd_idx = [
@@ -205,11 +205,12 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             tokenizer("D", add_special_tokens=False).input_ids[0],
         ]
         self.accuracy = evaluate.load("accuracy")
+        self.args = args
 
     def on_evaluate(self, args, state, control, model, **kwargs):
         data_loader = self.trainer.get_eval_dataloader(self.dataset)
         source_max_len = self.trainer.data_collator.source_max_len
-        self.trainer.data_collator.source_max_len = args.source_max_len
+        self.trainer.data_collator.source_max_len = self.args.source_max_len
         self.trainer.model.eval()
         preds, refs = [], []
         loss_mmlu = 0
@@ -237,9 +238,9 @@ class MMLUEvalCallback(transformers.TrainerCallback):
                 references=subjects[subject]['refs'],
                 predictions=subjects[subject]['preds']
             )['accuracy']
-            results[f'mmlu_{args.mmlu_split}_accuracy_{subject}'] = subject_score
+            results[f'mmlu_accuracy_{subject}'] = subject_score
             subject_scores.append(subject_score)
-        results[f'mmlu_{args.mmlu_split}_accuracy'] = np.mean(subject_scores)
+        results[f'mmlu_accuracy'] = np.mean(subject_scores)
         self.trainer.log(results)
         self.trainer.data_collator.source_max_len = source_max_len
 

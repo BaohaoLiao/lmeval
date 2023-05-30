@@ -236,7 +236,8 @@ def train():
             data.MMLUEvalCallback(
                 trainer,
                 additional_eval_dataset,
-                tokenizer
+                tokenizer,
+                args
             )
         )
 
