@@ -216,9 +216,11 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         preds, refs = [], []
         loss_mmlu = 0
 
+        print(self.dataset)
         for batch in tqdm(data_loader, total=len(data_loader)):
-            print(batch.size())
+            print(batch)
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
+            print(logits.size())
             # There are two tokens, the output, and eos token.
             for i, logit in enumerate(logits):
                 label_non_zero_id = (batch['labels'][i] != -100).nonzero()[0][0]
