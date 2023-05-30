@@ -6,15 +6,11 @@ from torch.nn.utils.rnn import pad_sequence
 import transformers
 
 from .mmlu import make_mmlu_dataset
+from .mmlu import MMLUEvalCallback
 from .alpaca import extract_alpaca_dataset
 
 
 IGNORE_INDEX = -100
-
-
-def process_dataset(task_name, task_config):
-    if task_name == "mmlu":
-        return make_mmlu_dataset(**task_config)
 
 
 @dataclass

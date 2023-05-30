@@ -1,7 +1,7 @@
 """
 Adapted from https://github.com/artidoro/qlora/blob/main/qlora.py
 """
-
+import logging
 import argparse
 from typing import Optional, Dict
 from dataclasses import dataclass, field
@@ -17,9 +17,9 @@ from transformers import (
 )
 from datasets import load_dataset
 
-
 import data
 
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -168,7 +168,6 @@ def make_data_module(tokenizer: transformers.PreTrainedTokenizer, args) -> Dict:
     )
 
 
-
 def train():
     hfparser = transformers.HfArgumentParser((
         ModelArguments, DataArguments, TrainingArguments, GenerationArguments
@@ -179,9 +178,7 @@ def train():
     args = argparse.Namespace(
         **vars(model_args), **vars(data_args), **vars(training_args)
     )
-    # TODO: additional eval
 
-    """
     model = get_accelerate_model(args)
     print('loaded model')
     set_seed(args.seed)
@@ -197,7 +194,9 @@ def train():
         # Check and add them if missing to prevent them from being parsed into different tokens.
         # Note that these are present in the vocabulary.
         # Note also that `model.config.pad_token_id` is 0 which corresponds to `<unk>` token.
-        if tokenizer.eos_token_id != model.config.eos_token_id or tokenizer.pad_token_id != model.config.pad_token_id or tokenizer.unk_token_id != model.config.unk_token_id:
+        if tokenizer.eos_token_id != model.config.eos_token_id \
+                or tokenizer.pad_token_id != model.config.pad_token_id \
+                or tokenizer.unk_token_id != model.config.unk_token_id:
             tokenizer.add_special_tokens(
                 {
                     "eos_token": tokenizer.convert_ids_to_tokens(model.config.eos_token_id),
@@ -213,7 +212,34 @@ def train():
         args=training_args,
         **{k: v for k, v in data_module.items() if k != 'predict_dataset'},
     )
-    """
+
+    if args.do_additional_eval:
+        if args.args_for_additional_eval.task_name == "mmlu":
+            additional_eval_dataset = data.make_mmlu_dataset(
+                category=args.args_for_additional_eval.category,
+                tokenizer=tokenizer,
+                max_seq_length=args.source_max_len,
+                split=args.args_for_additional_eval.split,
+                kshot=args.args_for_additional_eval.kshot,
+                num_proc=1
+            )
+        trainer.add_callback(
+            data.MMLUEvalCallback(
+                trainer,
+                additional_eval_dataset,
+                tokenizer
+            )
+        )
+
+    all_metrics = {"run_name": args.run_name}
+    # Evaluation
+    if args.do_eval:
+        logger.info("*** Evaluate ***")
+        metrics = trainer.evaluate(metric_key_prefix="eval")
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
+        all_metrics.update(metrics)
+
     return
 
 
