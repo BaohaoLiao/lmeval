@@ -76,6 +76,10 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
         default=None,
         metadata={"help": "The argument for additional evalution"}
     )
+    remove_unused_columns: bool = field(
+        default=False,
+        metadata={"help": 'Removed unused columns. Needed to make this codebase work.'}
+    )
 
 @dataclass
 class GenerationArguments:
