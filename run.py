@@ -65,6 +65,10 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
     cache_dir: Optional[str] = field(
         default=None
     )
+    train_on_source: Optional[bool] = field(
+        default=False,
+        metadata={"help": "Whether to train on the input in addition to the target text."}
+    )
     do_additional_eval: Optional[bool] = field(
         default=False,
         metadata={"help": "Whether to run additional evaluation."}
