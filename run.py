@@ -183,6 +183,7 @@ def train():
         **vars(model_args), **vars(data_args), **vars(training_args)
     )
 
+    print("loading model ...")
     model = get_accelerate_model(args)
     print('loaded model')
     set_seed(args.seed)
@@ -218,13 +219,13 @@ def train():
     )
 
     if args.do_additional_eval:
-        if args.args_for_additional_eval.task_name == "mmlu":
+        if args.args_for_additional_eval["task_name"] == "mmlu":
             additional_eval_dataset = data.make_mmlu_dataset(
-                category=args.args_for_additional_eval.category,
+                category=args.args_for_additional_eval["category"],
                 tokenizer=tokenizer,
                 max_seq_length=args.source_max_len,
-                split=args.args_for_additional_eval.split,
-                kshot=args.args_for_additional_eval.kshot,
+                split=args.args_for_additional_eval["split"],
+                kshot=args.args_for_additional_eval["kshot"],
                 num_proc=1
             )
         trainer.add_callback(
