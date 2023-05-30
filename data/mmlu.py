@@ -2,9 +2,9 @@
 Adapted from https://github.com/declare-lab/flan-eval/blob/main/mmlu.py
 and https://github.com/hendrycks/test
 """
-import tqdm
 import evaluate
 import numpy as np
+from tqdm import tqdm
 
 import torch
 import transformers
@@ -208,7 +208,6 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         self.args = args
 
     def on_evaluate(self, args, state, control, model, **kwargs):
-        print(self.dataset)
         data_loader = self.trainer.get_eval_dataloader(self.dataset)
         source_max_len = self.trainer.data_collator.source_max_len
         self.trainer.data_collator.source_max_len = self.args.source_max_len
