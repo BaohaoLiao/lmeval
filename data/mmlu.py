@@ -221,7 +221,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             # There are two tokens, the output, and eos token.
             for i, logit in enumerate(logits):
                 label_non_zero_id = (batch['labels'][i] != -100).nonzero()[0][0]
-                print(label_non_zero_id, self.abcd_idx, labels)
+                print(label_non_zero_id, self.abcd_idx, labels, logit.size())
                 logit_abcd = logit[label_non_zero_id - 1][self.abcd_idx]
                 preds.append(torch.argmax(logit_abcd).item())
             labels = labels[labels != IGNORE_INDEX].view(-1, 2)[:, 0]
