@@ -217,7 +217,6 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         loss_mmlu = 0
 
         for batch in tqdm(data_loader, total=len(data_loader)):
-            print(batch)
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
             # There are two tokens, the output, and eos token.
             for i, logit in enumerate(logits):
@@ -244,8 +243,8 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             results[f'mmlu_accuracy_{subject}'] = subject_score
             subject_scores.append(subject_score)
         results[f'mmlu_accuracy'] = np.mean(subject_scores)
-        self.trainer.log_metrics("eval", results)
-        self.trainer.save_metrics("eval", results)
+        self.trainer.log_metrics("mmlu", results)
+        self.trainer.save_metrics("mmlu", results)
         self.trainer.data_collator.source_max_len = source_max_len
 
 
