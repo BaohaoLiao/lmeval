@@ -13,7 +13,7 @@ from transformers import (
     AutoModelForCausalLM,
     set_seed,
     Seq2SeqTrainer,
-    LlamaTokenizerFast
+    LlamaTokenizer
 )
 from datasets import load_dataset
 
@@ -195,7 +195,7 @@ def train():
         padding_side="right",
         use_fast=True,
     )
-    if isinstance(tokenizer, LlamaTokenizerFast):
+    if isinstance(tokenizer, LlamaTokenizer):
         # LLaMA tokenizer may not have correct special tokens set.
         # Check and add them if missing to prevent them from being parsed into different tokens.
         # Note that these are present in the vocabulary.
@@ -227,7 +227,7 @@ def train():
                 max_seq_length=args.source_max_len,
                 split=args.args_for_additional_eval["split"],
                 kshot=args.args_for_additional_eval["kshot"],
-                num_proc=1
+                num_proc=args.num_workers
             )
         trainer.add_callback(
             data.MMLUEvalCallback(
