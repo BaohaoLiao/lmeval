@@ -244,8 +244,8 @@ class MMLUEvalCallback(transformers.TrainerCallback):
             results[f'mmlu_accuracy_{subject}'] = subject_score
             subject_scores.append(subject_score)
         results[f'mmlu_accuracy'] = np.mean(subject_scores)
-        self.trainer.log_metrics(results)
-        self.trainer.save_metrics(results)
+        self.trainer.log_metrics("eval", results)
+        self.trainer.save_metrics("eval", results)
         self.trainer.data_collator.source_max_len = source_max_len
 
 
