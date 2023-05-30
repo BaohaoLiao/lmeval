@@ -241,7 +241,6 @@ def train():
         )
 
     all_metrics = {"run_name": args.run_name}
-    print(data_module["eval_dataset"])
     # Evaluation
     if args.do_eval:
         logger.info("*** Evaluate ***")
