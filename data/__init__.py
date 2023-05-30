@@ -25,7 +25,7 @@ class DataCollatorForCausalLM(object):
         # Extract elements
         sources = [example['input'] for example in instances]
         targets = [f"{example['output']}{self.tokenizer.eos_token}" for example in instances]
-        print(targets)
+
         # Tokenize
         tokenized_sources_with_prompt = self.tokenizer(
             sources,
@@ -62,7 +62,7 @@ class DataCollatorForCausalLM(object):
         input_ids = pad_sequence(input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id)
         labels = pad_sequence(
             labels, batch_first=True, padding_value=IGNORE_INDEX
-        ) if not self.predict_with_generate else None
+        ) #if not self.predict_with_generate else None
         data_dict = {
             'input_ids': input_ids,
             'attention_mask': input_ids.ne(self.tokenizer.pad_token_id),
