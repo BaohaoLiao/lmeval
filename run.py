@@ -80,6 +80,10 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
         default=False,
         metadata={"help": 'Removed unused columns. Needed to make this codebase work.'}
     )
+    num_workers: int = field(
+        default = 1,
+        metadata={"help": 'Number of process for data processing.'}
+    )
 
 @dataclass
 class GenerationArguments:
@@ -230,7 +234,7 @@ def train():
                 max_seq_length=args.source_max_len,
                 split=args.args_for_additional_eval["split"],
                 kshot=args.args_for_additional_eval["kshot"],
-                num_proc=1
+                num_proc=args.num_workers
             )
         trainer.add_callback(
             data.MMLUEvalCallback(
