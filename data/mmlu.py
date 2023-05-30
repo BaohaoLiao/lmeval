@@ -209,7 +209,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
     def on_evaluate(self, args, state, control, model, **kwargs):
         data_loader = self.trainer.get_eval_dataloader(self.dataset)
         source_max_len = self.trainer.data_collator.source_max_len
-        self.trainer.data_collator.source_max_len = args.mmlu_source_max_len
+        self.trainer.data_collator.source_max_len = args.source_max_len
         self.trainer.model.eval()
         preds, refs = [], []
         loss_mmlu = 0
