@@ -244,7 +244,6 @@ def train():
                 args
             )
         )
-        trainer.eval_dataset = additional_eval_dataset
 
     all_metrics = {"run_name": args.run_name}
     # Evaluation
