@@ -37,7 +37,7 @@ class DataCollatorForCausalLM(object):
             truncation=True,
             add_special_tokens=False,
         )
-        print(targets, tokenized_targets)
+
         # Build the input and labels for causal LM
         input_ids = []
         labels = []
@@ -57,6 +57,7 @@ class DataCollatorForCausalLM(object):
             else:
                 input_ids.append(torch.tensor(tokenized_source))
                 labels.append(torch.tensor(tokenized_target))
+                print("###", labels)
         # Apply padding
         input_ids = pad_sequence(input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id)
         labels = pad_sequence(
