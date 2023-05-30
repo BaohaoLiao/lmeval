@@ -230,7 +230,7 @@ def train():
                 max_seq_length=args.source_max_len,
                 split=args.args_for_additional_eval["split"],
                 kshot=args.args_for_additional_eval["kshot"],
-                num_proc=args.num_workers
+                num_proc=1
             )
         trainer.add_callback(
             data.MMLUEvalCallback(
