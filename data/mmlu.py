@@ -216,7 +216,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         preds, refs = [], []
         loss_mmlu = 0
 
-        print(self.dataset)
+        print(self.dataset[0])
         for batch in tqdm(data_loader, total=len(data_loader)):
             print(batch)
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
