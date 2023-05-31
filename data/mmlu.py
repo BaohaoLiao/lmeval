@@ -171,7 +171,6 @@ def make_mmlu_dataset(
             for k, v in SUBCATEGORIES.items():
                 if v[0] == c:
                     subjects[k] = v + [category]
-    print(subjects)
 
     for i, (k, v) in enumerate(subjects.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
