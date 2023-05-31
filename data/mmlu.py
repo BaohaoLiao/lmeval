@@ -168,6 +168,8 @@ def make_mmlu_dataset(
                 if v[0] == c:
                     subjects[k] = v
 
+    subjects["abstract_algebra"] = ["math"]
+
     for i, (k, v) in enumerate(subjects.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
@@ -218,6 +220,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         for batch in tqdm(data_loader, total=len(data_loader)):
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
             # There are two tokens, the output, and eos token.
+            print(labels)
             for i, logit in enumerate(logits):
                 label_non_zero_id = (batch['labels'][i] != -100).nonzero()[0][0]
                 logit_abcd = logit[label_non_zero_id - 1][self.abcd_idx]
