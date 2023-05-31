@@ -159,7 +159,6 @@ def make_mmlu_dataset(
         assert category in CATEGORIES.keys(), \
             f"You can only choose a category from {CATEGORIES.keys()}"
 
-    """
     if category == "all":
         subjects = SUBCATEGORIES
     else:
@@ -168,9 +167,6 @@ def make_mmlu_dataset(
             for k, v in SUBCATEGORIES.items():
                 if v[0] == c:
                     subjects[k] = v
-    """
-    subjects = {}
-    subjects["abstract_algebra"] = ["math"]
 
     for i, (k, v) in enumerate(subjects.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
@@ -222,7 +218,6 @@ class MMLUEvalCallback(transformers.TrainerCallback):
         for batch in tqdm(data_loader, total=len(data_loader)):
             (loss, logits, labels) = self.trainer.prediction_step(self.trainer.model, batch, prediction_loss_only=False)
             # There are two tokens, the output, and eos token.
-            print(labels, self.abcd_idx)
             for i, logit in enumerate(logits):
                 label_non_zero_id = (batch['labels'][i] != -100).nonzero()[0][0]
                 logit_abcd = logit[label_non_zero_id - 1][self.abcd_idx]

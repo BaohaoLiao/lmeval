@@ -12,7 +12,7 @@ from transformers import (
     AutoModelForCausalLM,
     set_seed,
     Seq2SeqTrainer,
-    LlamaTokenizer,
+    LlamaTokenizer
 )
 from datasets import load_dataset
 
@@ -237,7 +237,7 @@ def train():
         args.model_name_or_path,
         cache_dir=args.cache_dir,
         padding_side="right",
-        use_fast=True,
+        use_fast=False,
     )
     if tokenizer._pad_token is None:
         smart_tokenizer_and_embedding_resize(
