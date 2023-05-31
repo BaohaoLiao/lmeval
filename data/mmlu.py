@@ -159,6 +159,7 @@ def make_mmlu_dataset(
         assert category in CATEGORIES.keys(), \
             f"You can only choose a category from {CATEGORIES.keys()}"
 
+    """
     if category == "all":
         subjects = SUBCATEGORIES
     else:
@@ -167,7 +168,8 @@ def make_mmlu_dataset(
             for k, v in SUBCATEGORIES.items():
                 if v[0] == c:
                     subjects[k] = v
-
+    """
+    subjects = {}
     subjects["abstract_algebra"] = ["math"]
 
     for i, (k, v) in enumerate(subjects.items()):
