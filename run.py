@@ -229,6 +229,7 @@ def train():
 
     print("loading model ...")
     model = get_accelerate_model(args)
+    model.config.use_cache = False
     print('finished model loading')
     set_seed(args.seed)
 
