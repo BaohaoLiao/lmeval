@@ -151,7 +151,7 @@ def make_mmlu_dataset(
     :param split: in ["train", "validation", "test"]
     :param kshot: 5 by default
     :return:
-        raw_dataset: {"input": ..., "output":..., "category": ..., "subcategory": ...}
+        raw_dataset: {"input": ..., "output":..., "bigcategory":..., "category": ..., "subcategory": ...}
     """
     assert category is not None, \
             f"You need to specify the category in {CATEGORIES.keys()} or all"
