@@ -161,19 +161,25 @@ def make_mmlu_dataset(
 
     if category == "all":
         subjects = SUBCATEGORIES
+        for k, v in subjects.items():
+            for g, s in CATEGORIES.items():
+                if v[0] in s:
+                    subjects[k].append(g)
     else:
         subjects = {}
         for c in CATEGORIES[category]:
             for k, v in SUBCATEGORIES.items():
                 if v[0] == c:
-                    subjects[k] = v
+                    subjects[k] = v.append(category)
 
     for i, (k, v) in enumerate(subjects.items()):
         subcateg_dataset = load_dataset(DATASET_NAME, k, split=split)
         subcateg_column = [k] * len(subcateg_dataset)
         categ_column = [v[0]] * len(subcateg_dataset)
+        bigcateg_column = [v[1]] * len(subcateg_dataset)
         subcateg_dataset = subcateg_dataset.add_column("subcategory", subcateg_column)
         subcateg_dataset = subcateg_dataset.add_column("category", categ_column)
+        subcateg_dataset = subcateg_dataset.add_column("bigcategory", bigcateg_column)
 
         subcateg_dataset_dev = None
         if kshot > 0:
@@ -228,7 +234,7 @@ class MMLUEvalCallback(transformers.TrainerCallback):
 
         # Extract results by subject.
         results = {'mmlu_loss': loss_mmlu / len(data_loader)}
-        subject = self.dataset['category']
+        subject = self.dataset['bigcategory']
         subjects = {s: {'refs': [], 'preds': []} for s in set(subject)}
         for s, p, r in zip(subject, preds, refs):
             subjects[s]['preds'].append(p)
