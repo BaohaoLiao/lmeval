@@ -28,6 +28,10 @@ class ModelArguments:
     model_name_or_path: Optional[str] = field(
         default="facebook/opt-1.3b"
     )
+    trust_remote_code: Optional[bool] = field(
+        default=False,
+        metadata={"help": "Enable unpickling of arbitrary code in AutoModelForCausalLM#from_pretrained."}
+    )
 
 @dataclass
 class DataArguments:
@@ -81,6 +85,15 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
     remove_unused_columns: bool = field(
         default=False,
         metadata={"help": 'Removed unused columns. Needed to make this codebase work.'}
+    )
+    max_grad_norm: float = field(
+        default=0.3,
+        metadata={"help": 'Gradient clipping max norm. This is tuned and works well for all models tested.'}
+    )
+    group_by_length: bool = field(
+        default=True,
+        metadata={"help": 'Group sequences into batches with same length. Saves memory and speeds up training '
+                          'considerably.'}
     )
     num_workers: int = field(
         default = 1,
