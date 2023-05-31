@@ -161,6 +161,10 @@ def make_mmlu_dataset(
 
     if category == "all":
         subjects = SUBCATEGORIES
+        for k, v in subjects.items():
+            for g, s in CATEGORIES.items():
+                if v[0] in s:
+                    subjects[k] = v + [g]
     else:
         subjects = {}
         for c in CATEGORIES[category]:
