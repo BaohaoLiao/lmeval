@@ -12,7 +12,7 @@ from transformers import (
     AutoModelForCausalLM,
     set_seed,
     Seq2SeqTrainer,
-    LlamaTokenizer
+    LlamaTokenizerFast,
 )
 from datasets import load_dataset
 
@@ -237,7 +237,7 @@ def train():
         args.model_name_or_path,
         cache_dir=args.cache_dir,
         padding_side="right",
-        use_fast=False,
+        use_fast=True,
     )
     if tokenizer._pad_token is None:
         smart_tokenizer_and_embedding_resize(
@@ -245,7 +245,7 @@ def train():
             tokenizer=tokenizer,
             model=model,
         )
-    if isinstance(tokenizer, LlamaTokenizer):
+    if isinstance(tokenizer, LlamaTokenizerFast):
         # LLaMA tokenizer may not have correct special tokens set.
         # Check and add them if missing to prevent them from being parsed into different tokens.
         # Note that these are present in the vocabulary.
